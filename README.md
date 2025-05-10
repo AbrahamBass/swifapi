@@ -11,7 +11,7 @@
 ## 📦 Installation
 
 ```bash
-go get github.com/AbrahamBass/swiftapi@latest
+go get github.com/AbrahamBass/swifapi@latest
 ```
 
 ## 🌟 Why Choose SwiftAPI?
