@@ -19,9 +19,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/AbrahamBass/swifapi/internal/responses"
-	"github.com/AbrahamBass/swifapi/internal/types"
-	"github.com/AbrahamBass/swifapi/internal/ws"
+	"github.com/AbrahamBass/swiftapi/internal/responses"
+	"github.com/AbrahamBass/swiftapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/ws"
 
 	"go.uber.org/zap"
 )

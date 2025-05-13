@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/AbrahamBass/swifapi/internal/builders"
-	"github.com/AbrahamBass/swifapi/internal/logger"
-	"github.com/AbrahamBass/swifapi/internal/middlewares"
-	"github.com/AbrahamBass/swifapi/internal/tasks"
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/builders"
+	"github.com/AbrahamBass/swiftapi/internal/logger"
+	"github.com/AbrahamBass/swiftapi/internal/middlewares"
+	"github.com/AbrahamBass/swiftapi/internal/tasks"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"go.uber.org/dig"
 	"go.uber.org/zap"

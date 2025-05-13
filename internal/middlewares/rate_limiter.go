@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 type RateLimiter struct {
@@ -74,8 +74,8 @@ func NewRateLimiter() *RateLimiter {
 }
 
 func RateLimiterMiddleware(rl types.IRateLimiter) types.Middleware {
-	return func(c types.IMiddlewareContext, next func()) {
-		ip := c.RemoteAddr()
+	return func(scope types.IRequestScope, next func()) {
+		ip := scope.ClientIP()
 
 		rl.Mu().Lock()
 		defer rl.Mu().Unlock()
@@ -91,16 +91,16 @@ func RateLimiterMiddleware(rl types.IRateLimiter) types.Middleware {
 		}
 
 		if record.Count() >= rl.MaxRequests() {
-			c.Set("Retry-After", record.ResetTime().Format(time.RFC1123))
-			c.Exception(http.StatusTooManyRequests, "Too Many Requests")
+			scope.SetHeader("Retry-After", record.ResetTime().Format(time.RFC1123))
+			scope.Throw(http.StatusTooManyRequests, "Too Many Requests")
 			return
 		}
 
 		record.Increment()
 
-		c.Set("X-RateLimit-Limit", fmt.Sprintf("%d", rl.MaxRequests()))
-		c.Set("X-RateLimit-Remaining", fmt.Sprintf("%d", rl.MaxRequests()-record.Count()))
-		c.Set("X-RateLimit-Reset", fmt.Sprintf("%d", record.ResetTime().Unix()))
+		scope.SetHeader("X-RateLimit-Limit", fmt.Sprintf("%d", rl.MaxRequests()))
+		scope.SetHeader("X-RateLimit-Remaining", fmt.Sprintf("%d", rl.MaxRequests()-record.Count()))
+		scope.SetHeader("X-RateLimit-Reset", fmt.Sprintf("%d", record.ResetTime().Unix()))
 
 		next()
 	}

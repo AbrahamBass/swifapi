@@ -4,17 +4,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 func HTTPSRedirectMiddleware() types.Middleware {
-	return func(c types.IMiddlewareContext, next func()) {
-		if c.TLS() == nil {
-			host := strings.TrimPrefix(c.Host(), "www.")
-			httpsURL := "https://" + host + c.Path()
-			c.Redirect(http.StatusMovedPermanently, httpsURL)
+	return func(scope types.IRequestScope, handler func()) {
+		if scope.SecureChannel() == nil {
+			host := strings.TrimPrefix(scope.Hostname(), "www.")
+			httpsURL := "https://" + host + scope.Pathway()
+			scope.RedirectTo(http.StatusMovedPermanently, httpsURL)
 			return
 		}
-		next()
+		handler()
 	}
 }

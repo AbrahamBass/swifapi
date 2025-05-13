@@ -8,7 +8,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 type ResponseWriter struct {

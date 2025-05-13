@@ -1,7 +1,7 @@
 # 🚀 SwiftAPI - Next-Generation API Framework for Go
 
 [![Go Version](https://img.shields.io/badge/Go-%3E%3D1.21-blue)](https://golang.org/doc/devel/release)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/AbrahamBass/swifapi/blob/main/LICENSE.md)
 
 
 **SwiftAPI** redefines API development in Go with its intuitive design and powerful feature set, engineered for modern web applications requiring speed, safety, and scalability.
@@ -11,7 +11,7 @@
 ## 📦 Installation
 
 ```bash
-go get github.com/AbrahamBass/swifapi@latest
+go get github.com/AbrahamBass/swiftapi@latest
 ```
 
 ## 🌟 Why Choose SwiftAPI?

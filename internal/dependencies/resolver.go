@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"reflect"
 
-	c "github.com/AbrahamBass/swifapi/internal/context"
-	"github.com/AbrahamBass/swifapi/internal/responses"
-	"github.com/AbrahamBass/swifapi/internal/types"
-	"github.com/AbrahamBass/swifapi/internal/ws"
+	c "github.com/AbrahamBass/swiftapi/internal/context"
+	"github.com/AbrahamBass/swiftapi/internal/responses"
+	"github.com/AbrahamBass/swiftapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/ws"
 
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
@@ -90,12 +90,12 @@ func HTTPWrapper(
 		rw := responses.NewResponseWriter(w)
 		ctx := c.NewContext(rw, r)
 
-		fn := func(currentCtx types.IMiddlewareContext) {
+		fn := func(currentScope types.IRequestScope) {
 			resolver := newDependencyResolver(
 				dig,
 				logger,
 				handler,
-				currentCtx.Req(),
+				currentScope.Request(),
 				rw,
 				nil,
 			)
@@ -130,7 +130,7 @@ func WebSocketWrapper(
 		rw := responses.NewResponseWriter(w)
 		ctx := c.NewContext(rw, r)
 
-		fn := func(currentCtx types.IMiddlewareContext) {
+		fn := func(currentScope types.IRequestScope) {
 
 			wsManager := ws.NewWebsocketManager(wsUpgrader, logger)
 
@@ -138,7 +138,7 @@ func WebSocketWrapper(
 				dig,
 				logger,
 				handler,
-				currentCtx.Req(),
+				currentScope.Request(),
 				rw,
 				wsManager,
 			)

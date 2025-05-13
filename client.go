@@ -1,17 +1,17 @@
-package swifapi
+package swiftapi
 
 import (
-	i "github.com/AbrahamBass/swifapi/internal"
-	"github.com/AbrahamBass/swifapi/internal/responses"
-	"github.com/AbrahamBass/swifapi/internal/tasks"
-	"github.com/AbrahamBass/swifapi/internal/testifyx"
-	"github.com/AbrahamBass/swifapi/internal/types"
-	"github.com/AbrahamBass/swifapi/internal/ws"
+	i "github.com/AbrahamBass/swiftapi/internal"
+	"github.com/AbrahamBass/swiftapi/internal/responses"
+	"github.com/AbrahamBass/swiftapi/internal/tasks"
+	"github.com/AbrahamBass/swiftapi/internal/testifyx"
+	"github.com/AbrahamBass/swiftapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/ws"
 )
 
 type Application = types.IApplication
 
-var NewApplication = i.NewApplication
+var Bootstrap = i.NewApplication
 
 var Describe = testifyx.Describe
 var Benchmark = testifyx.Benchmark
@@ -46,11 +46,12 @@ var (
 	File                = responses.File
 	Html                = responses.Html
 	Template            = responses.Template
-	Exception           = responses.Exception
+	Throw               = responses.Throw
 	Problem             = responses.Problem
 	ValidationProblem   = responses.ValidationProblem
 	CreatedAt           = responses.CreatedAt
 	PartialContent      = responses.PartialContent
+	Streaming           = responses.Streaming
 )
 
 func Streamer[T any](generator func(yield func(T) error) error) <-chan []byte {
@@ -65,35 +66,35 @@ type (
 )
 
 type (
-	Ipt[T any] struct {
+	Silk[T any] struct {
 		Value T
 	}
 
-	Hd[T any] struct {
+	Signal[T any] struct {
 		Value T
 	}
 
-	Pth[T any] struct {
+	Pathway[T any] struct {
 		Value T
 	}
 
-	Qry[T any] struct {
+	Query[T any] struct {
 		Value T
 	}
 
-	Ck[T any] struct {
+	Crumb[T any] struct {
 		Value T
 	}
 
-	Bdy[T any] struct {
+	Body[T any] struct {
 		Value T
 	}
 
-	Svcx[T any] struct {
+	Dependency[T any] struct {
 		Value T
 	}
 
-	Ctx[T any] struct {
+	Scope[T any] struct {
 		Value T
 	}
 )
@@ -104,7 +105,7 @@ type BackgroundTaskManager = tasks.BackgroundTaskManager
 
 type WebsocketManager = ws.WebsocketManager
 
-type Middleware = types.IMiddlewareContext
+type RequestScope = types.IRequestScope
 
 type MediaType = types.MediaType
 

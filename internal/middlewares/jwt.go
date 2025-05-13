@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -59,16 +59,16 @@ func (j *JWTConfig) SetIssuer(issuer []string) {
 }
 
 func JWTMiddleware(jwtConfig types.IJWTConfig) types.Middleware {
-	return func(c types.IMiddlewareContext, next func()) {
-		authHeader, ok := c.HdVal("Authorization")
+	return func(scope types.IRequestScope, handler func()) {
+		authHeader, ok := scope.MetaVal("Authorization")
 		if authHeader == "" || !ok {
-			c.Exception(401, "Unauthorized")
+			scope.Throw(401, "Unauthorized")
 			return
 		}
 
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.Exception(http.StatusUnauthorized, "Invalid authorization format")
+			scope.Throw(http.StatusUnauthorized, "Invalid authorization format")
 			return
 		}
 		tokenString := parts[1]
@@ -81,30 +81,30 @@ func JWTMiddleware(jwtConfig types.IJWTConfig) types.Middleware {
 		})
 
 		if err != nil {
-			c.Exception(401, "Invalid token: "+err.Error())
+			scope.Throw(401, "Invalid token: "+err.Error())
 			return
 		}
 
 		if !token.Valid {
-			c.Exception(http.StatusUnauthorized, "Token invalid")
+			scope.Throw(http.StatusUnauthorized, "Token invalid")
 			return
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			if expClaim, err := claims.GetExpirationTime(); err == nil {
 				if time.Now().After(expClaim.Time) {
-					c.Exception(401, "Token expired")
+					scope.Throw(401, "Token expired")
 					return
 				}
 			} else {
-				c.Exception(401, "Expiration claim required")
+				scope.Throw(401, "Expiration claim required")
 				return
 			}
 
 			if len(jwtConfig.Issuer()) > 0 {
 				iss, ok := claims["iss"].(string)
 				if !ok || !contains(jwtConfig.Issuer(), iss) {
-					c.Exception(http.StatusUnauthorized, "Emisor (issuer) no permitido")
+					scope.Throw(http.StatusUnauthorized, "Emisor (issuer) no permitido")
 					return
 				}
 			}
@@ -112,15 +112,15 @@ func JWTMiddleware(jwtConfig types.IJWTConfig) types.Middleware {
 			if len(jwtConfig.Audience()) > 0 {
 				aud, ok := claims["aud"].(string)
 				if !ok || !contains(jwtConfig.Audience(), aud) {
-					c.Exception(http.StatusUnauthorized, "Audiencia (audience) no permitida")
+					scope.Throw(http.StatusUnauthorized, "Audiencia (audience) no permitida")
 					return
 				}
 			}
 
 		}
 
-		c.SetCtx("claims", token.Claims)
+		scope.SetBaggage("claims", token.Claims)
 
-		next()
+		handler()
 	}
 }

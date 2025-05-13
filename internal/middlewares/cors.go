@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 type CORSConfig struct {
@@ -56,27 +56,27 @@ func NewCORSConfig() *CORSConfig {
 }
 
 func CORSMiddleware(config types.ICORSConfigurer) types.Middleware {
-	return func(c types.IMiddlewareContext, next func()) {
-		origin, _ := c.HdVal("Origin")
+	return func(scope types.IRequestScope, handler func()) {
+		origin, _ := scope.MetaVal("Origin")
 		if isOriginAllowed(origin, config.AllowedOrigins()) {
-			c.Set("Access-Control-Allow-Origin", origin)
+			scope.SetHeader("Access-Control-Allow-Origin", origin)
 			if config.AllowCredentials() {
-				c.Set("Access-Control-Allow-Credentials", "true")
+				scope.SetHeader("Access-Control-Allow-Credentials", "true")
 			}
 		}
 
-		if c.Method() == "OPTIONS" {
-			c.Set("Access-Control-Allow-Methods", strings.Join(config.AllowedMethods(), ", "))
-			c.Set("Access-Control-Allow-Headers", strings.Join(config.AllowedHeaders(), ", "))
-			c.Response(http.StatusNoContent, nil)
+		if scope.Protocol() == "OPTIONS" {
+			scope.SetHeader("Access-Control-Allow-Methods", strings.Join(config.AllowedMethods(), ", "))
+			scope.SetHeader("Access-Control-Allow-Headers", strings.Join(config.AllowedHeaders(), ", "))
+			scope.Respond(http.StatusNoContent, nil)
 			return
 		}
 
-		if !isMethodAllowed(c.Method(), config.AllowedMethods()) {
-			c.Exception(http.StatusMethodNotAllowed, "Method Not Allowed")
+		if !isMethodAllowed(scope.Protocol(), config.AllowedMethods()) {
+			scope.Throw(http.StatusMethodNotAllowed, "Method Not Allowed")
 			return
 		}
 
-		next()
+		handler()
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AbrahamBass/swifapi/internal/responses"
+	"github.com/AbrahamBass/swiftapi/internal/responses"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

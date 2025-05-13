@@ -1,14 +1,14 @@
 package middlewares
 
 import (
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"github.com/microcosm-cc/bluemonday"
 )
 
 func SanitizationMiddleware() types.Middleware {
-	return func(c types.IMiddlewareContext, next func()) {
-		r := c.Req()
+	return func(scope types.IRequestScope, handler func()) {
+		r := scope.Request()
 
 		p := bluemonday.StrictPolicy()
 
@@ -19,5 +19,6 @@ func SanitizationMiddleware() types.Middleware {
 		sanitizeFragment(r, p)
 		sanitizeFormData(r, p)
 
+		handler()
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"github.com/spf13/cast"
 )
@@ -77,14 +77,14 @@ func convertToType(value interface{}, targetType reflect.Type) (interface{}, err
 }
 
 func buildMiddlewareChain(
-	finalHandler func(types.IMiddlewareContext),
+	finalHandler func(types.IRequestScope),
 	middlewares []types.Middleware,
-) func(types.IMiddlewareContext) {
+) func(types.IRequestScope) {
 	chain := finalHandler
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		mw := middlewares[i]
 		next := chain
-		chain = func(ctx types.IMiddlewareContext) {
+		chain = func(ctx types.IRequestScope) {
 			mw(ctx, func() {
 				next(ctx)
 			})

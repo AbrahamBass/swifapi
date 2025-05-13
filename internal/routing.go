@@ -4,58 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"github.com/gorilla/websocket"
 )
-
-type APIWebsocketRoute struct {
-	path        pathMatcher
-	methods     []string
-	handler     interface{}
-	middlewares []types.Middleware
-	wsUpgrader  websocket.Upgrader
-}
-
-func newAPIWebsocketRoute(path pathMatcher, methods []string, handler interface{}) *APIWebsocketRoute {
-	return &APIWebsocketRoute{
-		path:        path,
-		methods:     methods,
-		handler:     handler,
-		middlewares: []types.Middleware{},
-		wsUpgrader: websocket.Upgrader{
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
-			CheckOrigin: func(r *http.Request) bool {
-				return true
-			},
-		},
-	}
-}
-
-func (a *APIWebsocketRoute) Use(middlewares ...types.Middleware) {
-	a.middlewares = append(a.middlewares, middlewares...)
-}
-
-func (wsr *APIWebsocketRoute) PathMatcher() pathMatcher {
-	return wsr.path
-}
-
-func (wsr *APIWebsocketRoute) Methods() []string {
-	return wsr.methods
-}
-
-func (wsr *APIWebsocketRoute) Handler() interface{} {
-	return wsr.handler
-}
-
-func (wsr *APIWebsocketRoute) Middlewares() []types.Middleware {
-	return wsr.middlewares
-}
-
-func (wsr *APIWebsocketRoute) WSUpgrader() websocket.Upgrader {
-	return wsr.wsUpgrader
-}
 
 type APIRoute struct {
 	path        pathMatcher
@@ -83,7 +35,7 @@ func newAPIRoute(
 	}
 }
 
-func (a *APIRoute) Use(middlewares ...types.Middleware) {
+func (a *APIRoute) Wrap(middlewares ...types.Middleware) {
 	a.middlewares = append(a.middlewares, middlewares...)
 }
 
@@ -111,92 +63,27 @@ func (a *APIRouter) Version(version string) {
 	a.version = version
 }
 
-func (a *APIRouter) Use(middlewares ...types.Middleware) {
+func (a *APIRouter) Wrap(middlewares ...types.Middleware) {
 	a.middlewares = append(a.middlewares, middlewares...)
 }
 
-func (a *APIRouter) Authorization(authorization bool) {
+func (a *APIRouter) Secure(authorization bool) {
 	a.authorization = authorization
 }
 
-func (a *APIRouter) Get(
+func (a *APIRouter) Handle(
+	method string,
 	path string,
 	handler interface{},
 ) types.IAPIRoute {
 	return a.AddRoute(
 		path,
 		handler,
-		http.MethodGet,
+		method,
 	)
 }
 
-func (a *APIRouter) Post(
-	path string,
-	handler interface{},
-) types.IAPIRoute {
-	return a.AddRoute(
-		path,
-		handler,
-		http.MethodPost,
-	)
-}
-
-func (a *APIRouter) Put(
-	path string,
-	handler interface{},
-) types.IAPIRoute {
-	return a.AddRoute(
-		path,
-		handler,
-		http.MethodPut,
-	)
-}
-
-func (a *APIRouter) Patch(
-	path string,
-	handler interface{},
-) types.IAPIRoute {
-	return a.AddRoute(
-		path,
-		handler,
-		http.MethodPatch,
-	)
-}
-
-func (a *APIRouter) Delete(
-	path string,
-	handler interface{},
-) types.IAPIRoute {
-	return a.AddRoute(
-		path,
-		handler,
-		http.MethodDelete,
-	)
-}
-
-func (a *APIRouter) Head(
-	path string,
-	handler interface{},
-) types.IAPIRoute {
-	return a.AddRoute(
-		path,
-		handler,
-		http.MethodHead,
-	)
-}
-
-func (a *APIRouter) Options(
-	path string,
-	handler interface{},
-) types.IAPIRoute {
-	return a.AddRoute(
-		path,
-		handler,
-		http.MethodOptions,
-	)
-}
-
-func (a *APIRouter) Websocket(
+func (a *APIRouter) Stream(
 	path string,
 	handler interface{},
 	origin func(r *http.Request) bool,
@@ -212,12 +99,12 @@ func (a *APIRouter) Websocket(
 func (a *APIRouter) buildRoute(path string) pathMatcher {
 	var fullPath strings.Builder
 
-	if a.prefix != "" {
-		fullPath.WriteString(cleanPath(a.prefix))
-	}
-
 	if a.version != "" {
 		fullPath.WriteString(cleanPath(a.version))
+	}
+
+	if a.prefix != "" {
+		fullPath.WriteString(cleanPath(a.prefix))
 	}
 
 	fullPath.WriteString(cleanPath(path))
@@ -252,6 +139,10 @@ func (a *APIRouter) AddWebsocketRoute(
 	methods ...string,
 ) types.IAPIRoute {
 	compiled := a.buildRoute(path)
+
+	if origin == nil {
+		origin = func(r *http.Request) bool { return true }
+	}
 
 	upgrader := &websocket.Upgrader{
 		ReadBufferSize:  1024,

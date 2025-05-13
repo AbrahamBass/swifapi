@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 type StreamingResponse struct {
@@ -52,7 +52,7 @@ func ValidationProblem(errors map[string]string) *IActionResult {
 }
 
 func CreatedAt(url string, content interface{}) *IActionResult {
-	return Response(http.StatusCreated, content).Set("Location", url)
+	return Response(http.StatusCreated, content).SetHeader("Location", url)
 }
 
 func PartialContent(content []byte) *IActionResult {
@@ -119,7 +119,7 @@ func Html(content interface{}) *IActionResult {
 	return Response(http.StatusOK, content).MtType(types.TextHTML)
 }
 
-func Exception(statusCode int, content interface{}) *IActionResult {
+func Throw(statusCode int, content interface{}) *IActionResult {
 	return Response(statusCode, content)
 }
 
@@ -140,11 +140,11 @@ func NoContent() *IActionResult {
 }
 
 func MovedPermanently(url string) *IActionResult {
-	return Response(http.StatusMovedPermanently, nil).Set("Location", url)
+	return Response(http.StatusMovedPermanently, nil).SetHeader("Location", url)
 }
 
 func Found(url string) *IActionResult {
-	return Response(http.StatusFound, nil).Set("Location", url)
+	return Response(http.StatusFound, nil).SetHeader("Location", url)
 }
 
 func NotModified() *IActionResult {
@@ -190,15 +190,15 @@ func ServiceUnavailable(content interface{}) *IActionResult {
 func File(content []byte, filename string) *IActionResult {
 	return Ok(content).
 		MtType(types.OctetStream).
-		Set("Content-Disposition", "attachment; filename="+filename)
+		SetHeader("Content-Disposition", "attachment; filename="+filename)
 }
 
-func (a *IActionResult) Set(key, value string) *IActionResult {
+func (a *IActionResult) SetHeader(key, value string) *IActionResult {
 	a.headers[key] = value
 	return a
 }
 
-func (a *IActionResult) Add(cookie *http.Cookie) *IActionResult {
+func (a *IActionResult) SetCrumb(cookie *http.Cookie) *IActionResult {
 	a.cookies = append(a.cookies, cookie)
 	return a
 }

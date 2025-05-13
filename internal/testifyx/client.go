@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 type TestClient struct {

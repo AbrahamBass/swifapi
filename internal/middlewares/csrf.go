@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"github.com/gorilla/csrf"
 )
@@ -130,11 +130,11 @@ func CsrfMiddleware(config types.ICsrfConfig) types.Middleware {
 		opts...,
 	)
 
-	return func(c types.IMiddlewareContext, next func()) {
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			next()
+	return func(scope types.IRequestScope, handler func()) {
+		handlerFunc := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler()
 		})
-		csrfMiddleware(handler).ServeHTTP(c.Res(), c.Req())
+		csrfMiddleware(handlerFunc).ServeHTTP(scope.Response(), scope.Request())
 	}
 
 }

@@ -1,8 +1,8 @@
 package builders
 
 import (
-	"github.com/AbrahamBass/swifapi/internal/middlewares"
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/middlewares"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 type SanitizationBuilder struct {

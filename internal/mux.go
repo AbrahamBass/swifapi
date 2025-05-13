@@ -3,14 +3,14 @@ package swiftapi
 import (
 	"context"
 
-	"github.com/AbrahamBass/swifapi/internal/dependencies"
+	"github.com/AbrahamBass/swiftapi/internal/dependencies"
 
-	md "github.com/AbrahamBass/swifapi/internal/middlewares"
+	md "github.com/AbrahamBass/swiftapi/internal/middlewares"
 
 	"net/http"
 	"slices"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 
 	"go.uber.org/zap"
 )

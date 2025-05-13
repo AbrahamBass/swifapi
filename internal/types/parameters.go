@@ -16,12 +16,12 @@ const (
 type TagType string
 
 const (
-	TagQuery   TagType = "Qry"
-	TagPath    TagType = "Pth"
-	TagHeader  TagType = "Hd"
-	TagBody    TagType = "Bdy"
-	TagCookie  TagType = "Ck"
-	TagForm    TagType = "Ipt"
-	TagService TagType = "Svcx"
-	TagContext TagType = "Ctx"
+	TagQuery   TagType = "Query"
+	TagPath    TagType = "Pathway"
+	TagHeader  TagType = "Signal"
+	TagBody    TagType = "Body"
+	TagCookie  TagType = "Crumb"
+	TagForm    TagType = "Silk"
+	TagService TagType = "Dependency"
+	TagContext TagType = "Scope"
 )

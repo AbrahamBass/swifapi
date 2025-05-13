@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/AbrahamBass/swifapi/internal/types"
+	"github.com/AbrahamBass/swiftapi/internal/types"
 )
 
 func cleanPath(p string) string {

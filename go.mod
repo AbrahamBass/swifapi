@@ -1,4 +1,4 @@
-module github.com/AbrahamBass/swifapi
+module github.com/AbrahamBass/swiftapi
 
 go 1.23.5
 

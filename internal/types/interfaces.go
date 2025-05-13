@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type Middleware func(ctx IMiddlewareContext, next func())
+type Middleware func(scope IRequestScope, handler func())
 
 type ILogger interface {
 	GetLogger() *zap.Logger
@@ -25,26 +25,20 @@ type IStaticFile interface {
 }
 
 type IAPIRoute interface {
-	Use(middlewares ...Middleware)
+	Wrap(middlewares ...Middleware)
 }
 
 type IAPIWebsocketRoute interface {
-	Use(middlewares ...Middleware)
+	Wrap(middlewares ...Middleware)
 }
 
 type IAPIRouter interface {
-	Get(path string, handler interface{}) IAPIRoute
-	Post(path string, handler interface{}) IAPIRoute
-	Put(path string, handler interface{}) IAPIRoute
-	Patch(path string, handler interface{}) IAPIRoute
-	Delete(path string, handler interface{}) IAPIRoute
-	Head(path string, handler interface{}) IAPIRoute
-	Options(path string, handler interface{}) IAPIRoute
-	Websocket(path string, handler interface{}, origin func(r *http.Request) bool) IAPIRoute
+	Stream(path string, handler interface{}, origin func(r *http.Request) bool) IAPIRoute
+	Handle(method string, path string, handler interface{}) IAPIRoute
+	Secure(secure bool)
 	AddRoute(path string, handler interface{}, methods ...string) IAPIRoute
 	AddWebsocketRoute(path string, handler interface{}, origin func(r *http.Request) bool, methods ...string) IAPIRoute
-	Use(middlewares ...Middleware)
-	Authorization(authorization bool)
+	Wrap(middlewares ...Middleware)
 	Prefix(prefix string)
 	Version(version string)
 }
@@ -194,26 +188,30 @@ type ICSRFBuilder interface {
 	Apply() IApplication
 }
 
-type IMiddlewareContext interface {
-	Req() *http.Request
-	Res() http.ResponseWriter
-	Method() string
-	URL() *url.URL
-	Path() string
-	RemoteAddr() string
-	Referer() string
-	Qry(key string) (string, bool)
-	Prm(key string) (string, bool)
-	HdVal(key string) (string, bool)
-	CkVal(name string) (*http.Cookie, bool)
-	Response(status int, v interface{})
-	Exception(status int, err interface{})
+type IRequestScope interface {
+	Request() *http.Request
+	Response() http.ResponseWriter
+	Protocol() string
+	Location() *url.URL
+	Pathway() string
+	ClientIP() string
+	Referral() string
+
+	QueryVal(key string) (string, bool)
+	UriParam(key string) (string, bool)
+	MetaVal(key string) (string, bool)
+	CrumbVal(name string) (*http.Cookie, bool)
+
+	Respond(status int, v interface{})
+	Throw(status int, err interface{})
 	SetStatus(status int)
-	MtType(mt MediaType)
-	Set(key, value string)
-	SetCk(cookie *http.Cookie)
-	SetCtx(key string, value any)
-	TLS() *tls.ConnectionState
-	Host() string
-	Redirect(code int, url string)
+	MediaType(mt MediaType)
+
+	SetHeader(key, value string)
+	SetCrumb(cookie *http.Cookie)
+	SetBaggage(key string, value any)
+
+	SecureChannel() *tls.ConnectionState
+	Hostname() string
+	RedirectTo(code int, url string)
 }
